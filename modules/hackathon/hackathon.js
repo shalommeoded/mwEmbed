@@ -1,11 +1,18 @@
-( function( mw, $ ) {"use strict";
+(function (mw, $) {
+	"use strict";
 
-	mw.PluginManager.add('hackathon', mw.KBasePlugin.extend({
-		setup:function(){
+	var hackathon = mw.KBasePlugin.extend({
+		setup: function () {
+			this.addBindings();
+		},
 
+		addBindings:function(){
+			debugger;
 		}
 
+	});
 
-	}));
+	mw.PluginManager.add('hackathon', hackathon);
 
-} )( window.mw, window.jQuery );
+})
+(window.mw, window.jQuery);
