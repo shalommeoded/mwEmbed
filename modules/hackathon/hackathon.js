@@ -4,7 +4,7 @@
     mw.PluginManager.add( 'hackathon', mw.KBasePlugin.extend( {
 
         setup: function () {
-            MatchManager.getMatchStartTime().then( function ( matchStartTime ) {
+            MatchManager.getMatchStartTime().then( function ( matchTimeObj ) {
                 debugger;
             } );
         }
