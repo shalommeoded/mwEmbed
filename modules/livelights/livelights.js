@@ -4,7 +4,7 @@
     mw.PluginManager.add( 'livelights', mw.KBasePlugin.extend( {
 
         setup: function () {
-        }
+        },
 
     } ) );
 

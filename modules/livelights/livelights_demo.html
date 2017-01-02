@@ -179,10 +179,10 @@
                         kdp.kBind( "playing", function () {
                             kdp.kUnbind( "playing" );
                             var vid = $( this ).contents().contents().find( 'video' )[ 0 ];
-                            var matchCurTime = Math.round( vid.currentTime / 60 - 1 );
+                            var matchCurTime = Math.ceil( vid.currentTime / 60 );
                             $( window ).trigger( "onMatchMinuteRevealed", matchCurTime );
                             vid.addEventListener( "timeupdate", function () {
-                                $( window ).trigger( "onMatchTimeUpdate", Math.round( vid.currentTime / 60 - 1 ) );
+                                $( window ).trigger( "onMatchTimeUpdate", Math.ceil( vid.currentTime / 60 - 1 ) );
                             } );
                         } );
                     },

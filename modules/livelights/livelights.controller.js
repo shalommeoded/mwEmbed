@@ -3,25 +3,30 @@ angular
     .controller( 'livelightsController', [ '$scope', '$timeout', function ( $scope, $timeout ) {
 
         $( window ).bind( "onMatchMinuteRevealed", function ( event, curMinute ) {
-            init( curMinute ).then( function () {
-                $timeout( function () {
-
-                }, 100 );
-            } );
-        } );
-
-
-        $( window ).bind( "onMatchTimeUpdate", function ( event, curMatchMinute ) {
+            init( curMinute );
             $timeout( function () {
-                $scope.curMatchMinute = curMatchMinute;
             }, 100 );
         } );
 
-
-        $( window ).bind( "onNewMatchEvents", function ( newEvents ) {
+        $( window ).bind( "onMatchTimeUpdate", function ( event, curMatchMinute ) {
             $timeout( function () {
-                for ( var i = 0; i < newEvents.length; i++ ) {
-                    var event = newEvents[ i ];
+                if ( $scope.curMatchMinute === null || $scope.curMatchMinute !== curMatchMinute ) {
+                    $scope.curMatchMinute = curMatchMinute;
+                }
+            }, 100 );
+        } );
+
+        $( window ).bind( "onNewMatchEvents", function ( event, newEvents ) {
+            console.log( "onNewMatchEvents", newEvents );
+            $timeout( function () {
+                if ( typeof  newEvents === 'object' ) {
+                    var result = $.grep( $scope.matchEvents, function ( e ) {
+                        return e.id === newEvents.id;
+                    } );
+                    if ( result.length > 0 ) {
+                        return;
+                    }
+                    var event = newEvents;
                     if ( event.type === "goal" ) {
                         if ( event.team_id === $scope.homeTeamID ) {
                             $scope.homeTeamScore++;
@@ -29,9 +34,28 @@ angular
                             $scope.awayTeamScore++;
                         }
                     }
-                    $scope.events.push( event );
+                    $scope.matchEvents.push( event );
+                } else if ( typeof  newEvents === 'array' ) {
+                    for ( var i = 0; i < newEvents.length; i++ ) {
+                        var event = newEvents[ i ];
+                        var result = $.grep( $scope.matchEvents, function ( e ) {
+                            return e.id === event.id;
+                        } );
+                        if ( result.length > 0 ) {
+                            break;
+                        }
+                        if ( event.type === "goal" ) {
+                            if ( event.team_id === $scope.homeTeamID ) {
+                                $scope.homeTeamScore++;
+                            } else {
+                                $scope.awayTeamScore++;
+                            }
+                        }
+                        $scope.matchEvents.push( event );
+                    }
                 }
             }, 100 );
+
         } );
 
         $scope.matchEvents = [];
@@ -78,6 +102,7 @@ angular
                             }
                         }
                     }
+                    $( window ).trigger( "onInitialMatchEvents", matchDetails.events );
                 } );
         }
     } ] );
