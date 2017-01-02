@@ -1,0 +1,373 @@
+<!doctype html>
+<html>
+<head>
+    <style>
+        @font-face {
+            font-family: 'proxima nova';
+            src: url('assets/fonts/proxima/proximanova-light-webfont.eot');
+            src: url('assets/fonts/proxima/proximanova-light-webfont.eot?#iefix') format('embedded-opentype'),
+            url('assets/fonts/proxima/proximanova-light-webfont.woff2') format('woff2'),
+            url('assets/fonts/proxima/proximanova-light-webfont.woff') format('woff'),
+            url('assets/fonts/proxima/proximanova-light-webfont.ttf') format('truetype'),
+            url('assets/fonts/proxima/proximanova-light-webfont.svg#proxima_novalight') format('svg');
+            font-weight: 300;
+            font-style: normal;
+        }
+
+        .box {
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.59);
+        }
+
+        .event {
+            font-family: "proxima nova";
+            font-weight: lighter;
+            text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+            color: white;
+        }
+
+        .result {
+            font-family: "proxima nova";
+            font-size: 34px;
+            font-weight: bold;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            background: transparent;
+        }
+
+        .logo {
+            text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+            width: 40px;
+            height: 50px;
+            background: transparent;
+        }
+
+        .record {
+            margin-bottom: 6px;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+        }
+
+        .team-title {
+            font-family: "proxima nova";
+            color: white;
+            text-shadow: 2px 2px #323232;
+        }
+
+        .loader {
+            border: 12px solid #f3f3f3; /* Light grey */
+            border-top: 12px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes flickerAnimation {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @-o-keyframes flickerAnimation {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @-moz-keyframes flickerAnimation {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @-webkit-keyframes flickerAnimation {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .animate-flicker {
+            -webkit-animation: flickerAnimation 1s infinite;
+            -moz-animation: flickerAnimation 1s infinite;
+            -o-animation: flickerAnimation 1s infinite;
+            animation: flickerAnimation 1s infinite;
+        }
+    </style>
+    <title></title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script>window.jQuery || document.write( '<script src="js/vendor/jquery-1.12.0.min.js"><\/script>' )</script>
+    <script type="text/javascript" src="../../mwEmbedLoader.php"></script>
+    <script src="MatchEventsService.js"></script>
+    <script src="livelights.controller.js"></script>
+</head>
+<body ng-app="livelightsApp" ng-controller="livelightsController" ng-cloak
+      style="background-image: url('assets/img/barca_studium.jpg');background-repeat: no-repeat; background-size: 100%">
+<div class="row">
+    <div class="col-md-5"></div>
+    <div class="col-md-4">
+        <h1>
+            {logo}
+        </h1>
+    </div>
+    <div class="col-md-4"></div>
+</div>
+<div class="row">
+    <div class="col-md-1"></div>
+    <!--iFrame-->
+    <div class="col-md-6">
+        <div class="embed-responsive embed-responsive-4by3 team-title">
+            <script src="http://localhost/html5.kaltura/mwEmbed/mwEmbedLoader.php/p/2196781/sp/219678100/embedIframeJs/uiconf_id/37801821/partner_id/2196781"></script>
+            <div id="kaltura_player_1483283898" style="width: 800px; height: 500px;">
+                <script> kWidget.embed( {
+                    "targetId": "kaltura_player_1483283898",
+                    "wid": "_2196781",
+                    "uiconf_id": 37801821,
+                    "readyCallback": function ( playerId ) {
+                        var kdp = document.getElementById( playerId );
+                        kdp.kBind( "playing", function () {
+                            kdp.kUnbind( "playing" );
+                            var vid = $( this ).contents().contents().find( 'video' )[ 0 ];
+                            var matchCurTime = Math.ceil( vid.currentTime / 60 );
+                            $( window ).trigger( "onMatchMinuteRevealed", matchCurTime );
+                            vid.addEventListener( "timeupdate", function () {
+                                $( window ).trigger( "onMatchTimeUpdate", Math.ceil( vid.currentTime / 60 - 1 ) );
+                            } );
+                        } );
+                    },
+                    "flashvars": {
+                        "streamerType": "auto",
+                        "autoPlay": true,
+                        "livelights": {
+                            "plugin": true
+                        }
+                    },
+                    "cache_st": 1483283898,
+                    "entry_id": "1_87jx0mw9"
+                } ); </script>
+            </div>
+
+            <div id="kaltura_player" style="width: 800px; height: 500px;float: left;"></div>
+        </div>
+    </div>
+    <div ng-if="curMatchMinute === null">
+        <div class="col-md-5">
+            <center>
+                <div class="loader" style="margin-top: 40%"></div>
+            </center>
+        </div>
+    </div>
+    <div ng-if="curMatchMinute !== null">
+        <!--Configure Highlights-->
+        <div class="col-md-3">
+            <div class="panel panel-primary "
+                 style="font-family: 'proxima nova'; font-weight: lighter; color:white; border: transparent;">
+                <div class="panel-heading box"
+                     style="background-image: linear-gradient(to bottom,rgba(0,62,92,0.87) 0,#00496c 60%)">
+                    <h4 style="color: #89efff;">
+                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                        In-Video Highlights:</h4></div>
+                <div class="panel-body box" style="background-color: #016fa4;">
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <h4>
+                            <input style="margin-left: 5px;" type="checkbox" ng-model="showGoals"
+                                   ng-change="onShowGoalsChanged(showGoals)" aria-label="Goals">
+                            Goals
+                            <span class="glyphicon" aria-hidden="true">
+                        <img class="icon" src="assets/img/goal.png">
+                        </span>
+                        </h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <h4>
+                            <input style="margin-left: 5px;" type="checkbox" ng-model="showYellowCards"
+                                   ng-change="onShowYellowCardsChanged(showYellowCards)"
+                                   aria-label="Yellow Cards">
+                            Yellow Cards
+                            <span class="glyphicon" aria-hidden="true">
+                        <img class="icon" src="assets/img/yellow.png">
+                        </span>
+                        </h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <h4>
+                            <input style="margin-left: 5px;" type="checkbox" ng-model="showRedCards"
+                                   ng-change="onShowRedCardsChanged(showRedCards)"
+                                   aria-label="Red Cards">
+                            Red Cards
+                            <span class="glyphicon" aria-hidden="true">
+                        <img class="icon" src="assets/img/red.png">
+                        </span>
+                        </h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <h4>
+                            <input style="margin-left: 5px;" type="checkbox" ng-model="showSubtituations"
+                                   ng-change="onShowSubstitutionsChanged(showSubtituations)"
+                                   aria-label="Substitutions">
+                            Substitutions
+                            <span class="glyphicon" aria-hidden="true">
+                        <img class="icon" src="assets/img/subtitute.png">
+                        </span>
+                        </h4></div>
+                </div>
+            </div>
+            <!--Match Events-->
+            <div class="panel panel-primary "
+                 style="font-family: 'proxima nova'; font-weight: lighter; color:white; border: transparent;">
+                <div class="panel-heading box"
+                     style="background-image: linear-gradient(to bottom,rgba(0,62,92,0.87) 0,#00496c 60%)">
+                    <h4 style="color: #89efff;">
+                        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                        Match Events:</h4></div>
+                <div class="panel-body box" style="background-color: #016fa4;">
+                    <div class="row" style="margin-left: 5px;">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-4">
+                    <span class="glyphicon" aria-hidden="true" style="font-family: 'proxima nova'; font-size: 35px;">
+                        <img class="record animate-flicker" src="assets/img/record.png">
+                    {{curMatchMinute}}'
+                    </span>
+                        </div>
+                        <div class="col-md-2"></div>
+
+                    </div>
+                    <div class="row" style="margin-left: 5px;">
+                        <h1 class="team-title">
+                  <span class="glyphicon" aria-hidden="true">
+                        <img class="logo" src="assets/img/barce_logo.png">
+                  </span>
+                            {{homeTeamName}}
+                            -
+                            {{awayTeamName}}
+                            <span class="glyphicon" aria-hidden="true">
+                        <img class="logo" src="assets/img/espanyol_logo.png">
+                </span>
+                        </h1>
+                        <div class="row">
+                            <div class="col-md-7 team-title">
+                                <center class="result">
+                                    {{homeTeamScore}}
+                                </center>
+                            </div>
+                            <div class="col-md-2 team-title">
+                                <center class="result">
+                                    {{awayTeamScore}}
+                                </center>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <hr>
+                    </div>
+
+                    <div ng-repeat="event in matchEvents">
+                        <div ng-if="event.team_id === homeTeamID">
+                            <div class="row event">
+                                <div class="col-md-1"></div>
+                                <div ng-if="isNotSubstitution(event.type)">
+                                    <div class="col-md-10">{{event.minute}}' {{event.player_name}}
+                                        <span class="glyphicon" aria-hidden="true">
+                                    <img class="icon" ng-src="{{eventMap[event.type]}}">
+                                    </span>
+                                    </div>
+                                </div>
+                                <div ng-if="!isNotSubstitution(event.type)">
+                                    <div class="col-md-10">{{event.minute}}'
+                                        {{event.player_out_name}}<--{{event.player_in_name}}
+                                        <span class="glyphicon" aria-hidden="true">
+                                    <img class="icon" ng-src="{{eventMap[event.type]}}">
+                                    </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div ng-if="event.team_id === awayTeamID">
+                            <div class="row event">
+                                <div class="col-md-6"></div>
+
+                                <div ng-if="isNotSubstitution(event.type)">
+                                    <div class="col-md-6">{{event.minute}}' {{event.player_name}}
+                                        <span class="glyphicon" aria-hidden="true">
+                                    <img class="icon" ng-src="{{eventMap[event.type]}}">
+                                    </span>
+                                    </div>
+                                </div>
+                                <div ng-if="!isNotSubstitution(event.type)">
+                                    <div class="col-md-6">{{event.minute}}'
+                                        {{event.player_out_name}}<--{{event.player_in_name}}
+                                        <span class="glyphicon" aria-hidden="true">
+                                    <img class="icon" ng-src="{{eventMap[event.type]}}">
+                                    </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+            </div>
+            <div class="col-md-3">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
