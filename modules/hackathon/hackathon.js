@@ -3,11 +3,16 @@
 
 	var hackathon = mw.KBasePlugin.extend({
 		setup: function () {
+			var _this = this;
 			this.addBindings();
+			MatchManager.getMatchStartTime().then(function (matchStartTime) {
+				//debugger;
+				_this.startTime = matchStartTime;
+			});
 		},
 
-		addBindings:function(){
-			debugger;
+		addBindings: function () {
+			//debugger;
 		}
 
 	});

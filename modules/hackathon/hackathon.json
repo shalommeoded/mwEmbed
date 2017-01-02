@@ -1,9 +1,12 @@
 {
   "hackathon": {
     "scripts": [
-      "hackathon.js"
+      "hackathon.js",
+      "MatchEventsService.js"
     ],
-    "dependencies": ["mw.KBasePlugin"],
+    "dependencies": [
+      "mw.KBasePlugin"
+    ],
     "kalturaPluginName": "hackathon"
   }
 }

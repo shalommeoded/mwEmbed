@@ -19,37 +19,37 @@
 
 		waitForFirstPlay: false,
 		updateEnabled: true,
-        liveEdge: 98,
+		liveEdge: 98,
 
 		isSliderPreviewEnabled: function () {
 			return this.getConfig("sliderPreview") && !this.isDisabled;
 		},
 		setup: function (embedPlayer) {
-			if ( this.embedPlayer.isMobileSkin() ){
-				this.setConfig('parent','controlsContainer');
-				this.setConfig('showOnlyTime',true);
+			if (this.embedPlayer.isMobileSkin()) {
+				this.setConfig('parent', 'controlsContainer');
+				this.setConfig('showOnlyTime', true);
 			}
 			// make sure insert mode reflects parent type:
 			if (this.getConfig('parent') == 'controlsContainer') {
 				this.setConfig('insertMode', 'lastChild');
 			}
-            //new DVR layout: no time label, only negative live edge offset at the mousemove over the scrubber
-            if(this.embedPlayer.isDVR()){
-                this.setConfig('showOnlyTime',true);
-            }
+			//new DVR layout: no time label, only negative live edge offset at the mousemove over the scrubber
+			if (this.embedPlayer.isDVR()) {
+				this.setConfig('showOnlyTime', true);
+			}
 			this.addBindings();
-            if (this.isSliderPreviewEnabled()) {
+			if (this.isSliderPreviewEnabled()) {
 				this.setupThumbPreview();
 			}
 		},
 		addBindings: function () {
 			var _this = this;
 			this.bind('durationChange', function (event, duration) {
-                _this.duration = duration;
+				_this.duration = duration;
 			});
-            this.bind('seeked', function () {
-                _this.justSeeked = true;
-            });
+			this.bind('seeked', function () {
+				_this.justSeeked = true;
+			});
 
 			// check if parent is controlsContainer
 			if (this.getConfig('parent') == 'controlsContainer') {
@@ -62,8 +62,8 @@
 					var $container = _this.getComponent().parent();
 					// get remaining space:
 					var compSize = _this.embedPlayer.layoutBuilder.getComponentsWidthForContainer(
-						$container
-					) - _this.getComponent().width();
+							$container
+						) - _this.getComponent().width();
 					var targetSize = $container.width() - compSize;
 					if (targetSize < _this.getConfig('minWidth')) {
 						targetSize = _this.getConfig('minWidth');
@@ -91,13 +91,13 @@
 
 			this.bind('onOpenFullScreen', function () {
 				// check if IE11 and iframe (KMS-4606)
-                if( mw.isIE11() && ( mw.getConfig('EmbedPlayer.IsIframeServer' ) || mw.getConfig('EmbedPlayer.IsFriendlyIframe') ) ) {
-                    window["resizeScrubberIE11"] = true; // global var for jquery.ui.slider.js - fix jquery defect inside IE11 iframe fullscreen element.outerWidth()
-                }
+				if (mw.isIE11() && ( mw.getConfig('EmbedPlayer.IsIframeServer') || mw.getConfig('EmbedPlayer.IsFriendlyIframe') )) {
+					window["resizeScrubberIE11"] = true; // global var for jquery.ui.slider.js - fix jquery defect inside IE11 iframe fullscreen element.outerWidth()
+				}
 			});
 			this.bind('onCloseFullScreen', function () {
-				if( window["resizeScrubberIE11"]===true )
-                    window["resizeScrubberIE11"] = null; //clear global var used only by jquery in IE11 iframe fullscreen
+				if (window["resizeScrubberIE11"] === true)
+					window["resizeScrubberIE11"] = null; //clear global var used only by jquery in IE11 iframe fullscreen
 			});
 
 			this.bind('playerReady', function (event) {
@@ -133,11 +133,11 @@
 					_this.updateEnabled = true;
 				}
 			});
-            this.bind("onPlayerStateChange", function (e, newState, oldState) {
-                if(newState === 'pause') {
-                    _this.paused = true;
-                }
-            });
+			this.bind("onPlayerStateChange", function (e, newState, oldState) {
+				if (newState === 'pause') {
+					_this.paused = true;
+				}
+			});
 		},
 		bindUpdatePlayheadPercent: function () {
 			var _this = this;
@@ -157,61 +157,61 @@
 			});
 		},
 		updatePlayheadUI: function (val) {
-            if( this.getPlayer().isPlaying() && !this.paused && this.embedPlayer.isDVR() ) {
+			if (this.getPlayer().isPlaying() && !this.paused && this.embedPlayer.isDVR()) {
 				this.checkForLiveEdge();
-                if( !this.getPlayer().isLiveOffSynch()) {
-                    this.getComponent().slider('option', 'value', 999);
-                    return;
-                }
-            }
-			if( this.embedPlayer.isDVR() ) {
-				if ( this.duration < 1800 ) {
+				if (!this.getPlayer().isLiveOffSynch()) {
+					this.getComponent().slider('option', 'value', 999);
+					return;
+				}
+			}
+			if (this.embedPlayer.isDVR()) {
+				if (this.duration < 1800) {
 					var relativeEdge = this.calculateRelativeLiveEdge(val);
-					if ( !relativeEdge ) {
+					if (!relativeEdge) {
 						this.getComponent().slider('option', 'value', val);
 					}
 				}
 			} else {
 				this.getComponent().slider('option', 'value', val);
 			}
-            if(this.paused && this.getPlayer().isPlaying()){
-                this.paused = false;
-            }
+			if (this.paused && this.getPlayer().isPlaying()) {
+				this.paused = false;
+			}
 		},
-        checkForLiveEdge: function (){
-            if(this.justSeeked){
-                this.justSeeked = false;
-                return;
-            }
-            var playHeadPercent = (this.getPlayHeadComponent().position().left + this.getPlayHeadComponent().width()/2) / this.getComponent().width();
-            playHeadPercent = parseInt(playHeadPercent*100);
-            if( this.getPlayer().isLiveOffSynch() && playHeadPercent >= this.liveEdge ){
-                this.getPlayer().setLiveOffSynch(false);
-            }
-        },
-		calculateRelativeLiveEdge: function ( val ) {
-			if ( this.duration < 50 ) {
+		checkForLiveEdge: function () {
+			if (this.justSeeked) {
+				this.justSeeked = false;
+				return;
+			}
+			var playHeadPercent = (this.getPlayHeadComponent().position().left + this.getPlayHeadComponent().width() / 2) / this.getComponent().width();
+			playHeadPercent = parseInt(playHeadPercent * 100);
+			if (this.getPlayer().isLiveOffSynch() && playHeadPercent >= this.liveEdge) {
+				this.getPlayer().setLiveOffSynch(false);
+			}
+		},
+		calculateRelativeLiveEdge: function (val) {
+			if (this.duration < 50) {
 				return val > 700;
 			}
-			if ( this.duration < 100 ) {
+			if (this.duration < 100) {
 				return val > 800;
 			}
-			if ( this.duration < 200 ) {
+			if (this.duration < 200) {
 				return val > 850;
 			}
-			if ( this.duration < 500 ) {
+			if (this.duration < 500) {
 				return val > 900;
 			}
-			if ( this.duration < 900 ) {
+			if (this.duration < 900) {
 				return val > 950;
 			}
-			if ( this.duration < 1200 ) {
+			if (this.duration < 1200) {
 				return val > 970;
 			}
-			if ( this.duration < 1400 ) {
+			if (this.duration < 1400) {
 				return val > 980;
 			}
-			if ( this.duration < 1650 ) {
+			if (this.duration < 1650) {
 				return val > 990;
 			}
 		},
@@ -230,7 +230,7 @@
 					var offset = $this.offset();
 					var options = $this.slider('option');
 					var value = Math.round(((e.clientX - offset.left) / width) *
-						(options.max - options.min)) + options.min;
+							(options.max - options.min)) + options.min;
 
 					_this.showThumbnailPreview({
 						offset: offset,
@@ -243,12 +243,12 @@
 					_this.hideThumbnailPreview();
 				}
 			}).append(
-					$("<div/>")
-						.hide()
-						.addClass("sliderPreview")
-						.append($("<div/>").addClass("arrow"))
-						.append($("<span/>").addClass("sliderPreviewTime"))
-				);
+				$("<div/>")
+					.hide()
+					.addClass("sliderPreview")
+					.append($("<div/>").addClass("arrow"))
+					.append($("<span/>").addClass("sliderPreviewTime"))
+			);
 		},
 		onEnable: function () {
 			if (this.waitForFirstPlay) return;
@@ -268,13 +268,13 @@
 		},
 		loadThumbnails: function (callback) {
 			var _this = this;
-			if ( this.embedPlayer.isLive() || this.getConfig("showOnlyTime")) {
+			if (this.embedPlayer.isLive() || this.getConfig("showOnlyTime")) {
 				this.loadedThumb = true;
 			}
 			if (!this.loadedThumb) {
 				this.loadedThumb = true;
-				
-				
+
+
 				// preload the image slices:
 				var img = new Image();
 				img.onload = function () {
@@ -286,9 +286,9 @@
 			}
 
 		},
-		getThumbSlicesUrl: function(){
+		getThumbSlicesUrl: function () {
 			// check for config override: 
-			if( this.getConfig('thumbSlicesUrl')  ){
+			if (this.getConfig('thumbSlicesUrl')) {
 				return this.getConfig('thumbSlicesUrl');
 			}
 			var thumbReq = {
@@ -298,11 +298,11 @@
 				'width': this.getConfig("thumbWidth"),
 				'vid_slices': this.getSliceCount(this.duration)
 			}
-			if ( this.getPlayer().getFlashvars( 'loadThumbnailWithKs' )  ){
-				thumbReq[ 'ks' ] = this.getPlayer().getFlashvars('ks');
+			if (this.getPlayer().getFlashvars('loadThumbnailWithKs')) {
+				thumbReq['ks'] = this.getPlayer().getFlashvars('ks');
 			}
 			// else get thumb slices from helper:
-			return kWidget.getKalturaThumbUrl( thumbReq );
+			return kWidget.getKalturaThumbUrl(thumbReq);
 		},
 		showThumbnailPreview: function (data) {
 			var showOnlyTime = this.getConfig("showOnlyTime");
@@ -327,7 +327,7 @@
 			var previewWidth = $sliderPreview.width();
 			var previewHeight = $sliderPreview.height();
 			var top = $(".scrubber").position().top - previewHeight - 10;
-			if ( this.embedPlayer.isMobileSkin() ){
+			if (this.embedPlayer.isMobileSkin()) {
 				top -= 25;
 			}
 
@@ -351,13 +351,14 @@
 				$(".arrow").hide();
 			}
 
-            var perc = data.val / 1000;
+			var perc = data.val / 1000;
 			perc = perc > 1 ? 1 : perc;
 			var currentTime = Math.floor(this.duration * perc);
 			var thumbWidth = showOnlyTime ? $sliderPreviewTime.width() : this.getConfig("thumbWidth");
-			$sliderPreview.css({top: top, left: sliderLeft });
+			$sliderPreview.css({top: top, left: sliderLeft});
 			if (!showOnlyTime) {
-				$sliderPreview.css({'background-image': 'url(\'' + this.getThumbSlicesUrl() + '\')',
+				$sliderPreview.css({
+					'background-image': 'url(\'' + this.getThumbSlicesUrl() + '\')',
 					'background-position': kWidget.getThumbSpriteOffset(thumbWidth, currentTime, this.duration, this.getSliceCount(this.duration)),
 					'background-size': ( thumbWidth * this.getSliceCount(this.duration) ) + 'px 100%'
 				});
@@ -366,27 +367,27 @@
 			}
 			$(".scrubber .arrow").css("left", thumbWidth / 2 - 4);
 
-            var timeText;
-            if( this.embedPlayer.isDVR() ){
-                if( this.getPlayer().isLiveOffSynch() && parseInt(perc*100) > this.liveEdge ){
-                    timeText = 'LIVE';
-                }else {
-                    timeText = "-" + kWidget.seconds2npt(this.duration - currentTime);
-                }
-            }else{
-                timeText = kWidget.seconds2npt(currentTime);
-            }
-            $sliderPreviewTime.text(timeText);
+			var timeText;
+			if (this.embedPlayer.isDVR()) {
+				if (this.getPlayer().isLiveOffSynch() && parseInt(perc * 100) > this.liveEdge) {
+					timeText = 'LIVE';
+				} else {
+					timeText = "-" + kWidget.seconds2npt(this.duration - currentTime);
+				}
+			} else {
+				timeText = kWidget.seconds2npt(currentTime);
+			}
+			$sliderPreviewTime.text(timeText);
 			$sliderPreviewTime.css({bottom: 2, left: thumbWidth / 2 - $sliderPreviewTime.width() / 2 + 3});
 			$sliderPreview.css("width", thumbWidth);
 
 			if (kWidget.isIE8()) {
 				$sliderPreview.css("height", 43);
 			}
-			if ($sliderPreview.width() > 0){
-				$sliderPreview.css("visibility","visible");
-			}else{
-				$sliderPreview.css("visibility","hidden");
+			if ($sliderPreview.width() > 0) {
+				$sliderPreview.css("visibility", "visible");
+			} else {
+				$sliderPreview.css("visibility", "hidden");
 			}
 			$sliderPreview.show();
 		},
@@ -444,9 +445,9 @@
 				$slider.html('<span class="accessibilityLabel">' + title + '</span>');
 			}
 		},
-        getPlayHeadComponent: function () {
-            return this.getComponent().find('.playHead');
-        },
+		getPlayHeadComponent: function () {
+			return this.getComponent().find('.playHead');
+		},
 		getComponent: function () {
 			var _this = this;
 			if (!this.$el) {
@@ -461,25 +462,50 @@
 					.addClass('playHead PIE btn')
 					.wrap('<div class="handle-wrapper" />');
 				// Update attributes: 
-				this.updateAttr({ 'value': 0 });
+				this.updateAttr({'value': 0});
 
 				this.$el.find('.ui-slider-range-min').addClass('watched');
 				// Add buffer:
 				this.$el.append(
 					$('<div />').addClass("buffered")
 				);
+				if (this.getPlayer().id.indexOf("live_highlight") === -1) {
+					this.$el.append(
+						$('<div class="live-highlight-container"></div>').append(
+							$('<button class="live-highlight-icon">' +
+								'<img src="../../modules/hackathon/icons/Football.png" style="width: inherit; height: inherit;"/>' +
+								'</button>').hover(function () {
+									var video = top.document.getElementById("kaltura_player_live_highlight");
+									video.style.display = "";
+									video.onmouseenter = function(){
+										debugger;
+										this.style.display = "";
+									}
+							}, function(){
+								top.document.getElementById("kaltura_player_live_highlight").style.display = "none";
+							})
+						)
+					);
+				}
 				// if parent is controlsContainer set to zero width and update at update layout time.
 				if (this.getConfig('parent') == 'controlsContainer') {
 					this.$el.css({
 						'width': this.getConfig('minWidth')
 					});
 				}
-				this.$el.on("mouseup", function(){
+				this.$el.on("mouseup", function () {
 					_this.hideThumbnailPreview();
 				});
 			}
 			return this.$el;
+		},
+
+		onHighlightVideoReady: function () {
+			debugger;
 		}
 	}));
 
 })(window.mw, window.jQuery, kWidget);
+
+
+
