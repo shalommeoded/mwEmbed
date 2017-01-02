@@ -25,6 +25,7 @@
             return this.getConfig( "sliderPreview" ) && !this.isDisabled;
         },
         setup: function ( embedPlayer ) {
+            var _this = this;
             if ( this.embedPlayer.isMobileSkin() ) {
                 this.setConfig( 'parent', 'controlsContainer' );
                 this.setConfig( 'showOnlyTime', true );
@@ -41,18 +42,30 @@
             if ( this.isSliderPreviewEnabled() ) {
                 this.setupThumbPreview();
             }
+
+            $( 'body' ).on( 'toggleInVideoHighlights', function ( event, req ) {
+                var reqObj = JSON.parse( req );
+                var children = _this.$el.children();
+                var result = $.grep( children, function ( e ) {
+                    return $( e ).data( 'highlight-type' ) === reqObj.type;
+                } );
+                for ( var j = 0; j < result.length; j++ ) {
+                    var current = result[ j ];
+                    reqObj.action === "show" ? $( current ).fadeIn() : $( current ).fadeOut();
+                }
+            } );
         },
         addBindings: function () {
             var _this = this;
             this.bind( "playing", function () {
                 var self = this;
                 this.getPlayerElement().addEventListener( "timeupdate", function () {
-                    var currentTime = Math.ceil( self.getPlayerElement().currentTime / 60 - 1 );
+                    var currentTime = Math.ceil( self.getPlayerElement().currentTime / 60 );
                     return MatchManager.getMatchDetails( currentTime )
                         .then( function ( matchDetails ) {
                             var childern = _this.$el.children();
                             for ( var i = 0; i < matchDetails.events.length; i++ ) {
-                                var currentTime = Math.ceil( self.getPlayerElement().currentTime / 60 - 1 );
+                                var currentTime = Math.ceil( self.getPlayerElement().currentTime / 60 );
                                 var event = matchDetails.events[ i ];
                                 var result = $.grep( childern, function ( e ) {
                                     var idasstring = "" + event.id;
@@ -66,12 +79,13 @@
                                                 ' style="width: inherit; height: inherit;"/></button>' );
                                             var percent = event.minute / currentTime;
                                             if ( percent * 100 === 100 ) {
-                                                button.css( 'left', '98%' );
+                                                button.css( 'left', '97%' );
                                             } else {
                                                 button.css( 'left', percent * 100 + '%' );
                                             }
                                             button.attr( 'id', '' + event.id );
-                                            button.attr( 'type', event.type );
+                                            button.data( 'highlight-type', event.type );
+                                            button.css( 'display', 'none' );
                                             _this.$el.append( button );
                                             break;
                                         case "yellowcard":
@@ -80,13 +94,14 @@
                                                 ' style="width: inherit; height: inherit;"/></button>' );
                                             var percent = event.minute / currentTime;
                                             if ( percent * 100 === 100 ) {
-                                                button.css( 'left', '98%' );
+                                                button.css( 'left', '97%' );
                                             } else {
                                                 button.css( 'left', percent * 100 + '%' );
                                             }
                                             button.css( 'left', percent * 100 + '%' );
+                                            button.css( 'display', 'none' );
                                             button.attr( 'id', '' + event.id );
-                                            button.attr( 'type', event.type );
+                                            button.data( 'highlight-type', event.type );
                                             _this.$el.append( button );
                                             break;
                                         case "redcard":
@@ -95,13 +110,14 @@
                                                 ' style="width: inherit; height: inherit;"/></button>' );
                                             var percent = event.minute / currentTime;
                                             if ( percent * 100 === 100 ) {
-                                                button.css( 'left', '98%' );
+                                                button.css( 'left', '97%' );
                                             } else {
                                                 button.css( 'left', percent * 100 + '%' );
                                             }
                                             button.css( 'left', percent * 100 + '%' );
                                             button.attr( 'id', '' + event.id );
-                                            button.attr( 'type', event.type );
+                                            button.data( 'highlight-type', event.type );
+                                            button.css( 'display', 'none' );
                                             _this.$el.append( button );
                                             break;
                                         case "substitution":
@@ -110,13 +126,14 @@
                                                 ' style="width: inherit; height: inherit;"/></button>' );
                                             var percent = event.minute / currentTime;
                                             if ( percent * 100 === 100 ) {
-                                                button.css( 'left', '98%' );
+                                                button.css( 'left', '97%' );
                                             } else {
                                                 button.css( 'left', percent * 100 + '%' );
                                             }
                                             button.css( 'left', percent * 100 + '%' );
                                             button.attr( 'id', '' + event.id );
-                                            button.attr( 'type', event.type );
+                                            button.data( 'highlight-type', event.type );
+                                            button.css( 'display', 'none' );
                                             _this.$el.append( button );
                                             break;
                                     }

@@ -57,7 +57,10 @@ angular
             }, 100 );
 
         } );
-
+        $scope.showGoals = false;
+        $scope.showYellowCards = false;
+        $scope.showRedCards = false;
+        $scope.showSubtituations = false;
         $scope.matchEvents = [];
         $scope.curMatchMinute = null;
         $scope.homeTeamID = '';
@@ -78,6 +81,30 @@ angular
         $scope.isNotSubstitution = function ( eventType ) {
             return eventType === "yellowcard" || eventType === "redcard" || eventType === "goal";
         };
+
+        $scope.onShowGoalsChanged = function ( val ) {
+            inVideoHighlightsChanged( val, "goal" );
+        };
+
+        $scope.onShowYellowCardsChanged = function ( val ) {
+            inVideoHighlightsChanged( val, "yellowcard" );
+        };
+
+        $scope.onShowRedCardsChanged = function ( val ) {
+            inVideoHighlightsChanged( val, "redcard" );
+        };
+
+        $scope.onShowSubstitutionsChanged = function ( val ) {
+            inVideoHighlightsChanged( val, "substitution" );
+        };
+
+        function inVideoHighlightsChanged( val, type ) {
+            var req = {};
+            req.type = type;
+            req.action = val ? "show" : "hide";
+            $( '#kaltura_player_1483283898_ifp' )[ 0 ].contentWindow.$( 'body' ).trigger( "toggleInVideoHighlights",
+                JSON.stringify( req ) );
+        }
 
         function init( curMinute ) {
             $scope.curMatchMinute = curMinute;
