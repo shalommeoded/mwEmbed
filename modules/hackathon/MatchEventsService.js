@@ -91,7 +91,10 @@ var MatchManager = (function () {
 
         getMatchStartTime: function () {
             return this.matchEvents.getMatchData().then( function ( matchData ) {
-                return matchData.starting_time;
+                return {
+                    startingTime: matchData.starting_time,
+                    startingDate: matchData.starting_date
+                };
             } );
         }
     };

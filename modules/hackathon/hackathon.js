@@ -1,23 +1,14 @@
-(function (mw, $) {
-	"use strict";
+(function ( mw, $ ) {
+    "use strict";
 
-	var hackathon = mw.KBasePlugin.extend({
-		setup: function () {
-			var _this = this;
-			this.addBindings();
-			MatchManager.getMatchStartTime().then(function (matchStartTime) {
-				//debugger;
-				_this.startTime = matchStartTime;
-			});
-		},
+    mw.PluginManager.add( 'hackathon', mw.KBasePlugin.extend( {
 
-		addBindings: function () {
-			//debugger;
-		}
+        setup: function () {
+            MatchManager.getMatchStartTime().then( function ( matchTimeObj ) {
+                debugger;
+            } );
+        }
 
-	});
+    } ) );
 
-	mw.PluginManager.add('hackathon', hackathon);
-
-})
-(window.mw, window.jQuery);
+})( window.mw, window.jQuery );
