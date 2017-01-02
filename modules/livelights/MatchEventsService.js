@@ -6,6 +6,7 @@ var MatchManager = (function () {
     MatchEvents.prototype = {
         EVENT_END_POINT: 'https://api.soccerama.pro/v1.2/events/match/',
         MATCH_END_POINT: 'https://api.soccerama.pro/v1.2/matches/',
+        TEAM_END_POINT: 'https://api.soccerama.pro/v1.2/teams/',
         MATCH_ID: 699031,
         API_TOKEN: '?api_token=dd8TMmhlRhpiu44sykWAIW6kErW6fXHa6kWRhQj0yXbpJOzZ9dBzHwxIW0KO',
         EVENTS: null,
@@ -51,29 +52,38 @@ var MatchManager = (function () {
             } );
 
             return deferred.promise();
+        },
+
+        getTeamData: function ( id ) {
+            var deferred = $.Deferred();
+
+            $.ajax( {
+                url: this.TEAM_END_POINT + id + this.API_TOKEN,
+                success: function ( res ) {
+                    deferred.resolve( res );
+                }
+            } );
+
+            return deferred.promise();
         }
     };
 
 
     function EventsManager() {
-        this.MINUTE = 60000;
         this.matchEvents = null;
         this.events = [];
-        this.currentMinute = 0;
         this.matchEvents = new MatchEvents();
+
+        $( window ).bind( "onMatchTimeUpdate", function ( currentMinute ) {
+            this.update( currentMinute );
+        }.bind( this ) );
     }
 
     EventsManager.prototype = {
 
-
-        init: function () {
-            setInterval( this.update.bind( this ), this.MINUTE );
-        },
-
-        update: function () {
+        update: function ( currentMinute ) {
             var self = this;
-            this.currentMinute++;
-            return this.matchEvents.getEventsPerMinute( this.currentMinute )
+            return this.matchEvents.getEventsPerMinute( currentMinute )
                 .then( function ( curEvents ) {
                     var newEvents = [];
                     if ( curEvents.length > self.events.length ) {
@@ -89,12 +99,24 @@ var MatchManager = (function () {
                 } );
         },
 
-        getMatchStartTime: function () {
+        getMatchDetails: function ( minute ) {
+            var self = this;
+            var res = {};
             return this.matchEvents.getMatchData().then( function ( matchData ) {
-                return {
-                    startingTime: matchData.starting_time,
-                    startingDate: matchData.starting_date
-                };
+                return self.matchEvents.getTeamData( matchData.home_team_id ).then( function ( homeTeamData ) {
+                    return self.matchEvents.getTeamData( matchData.away_team_id ).then( function ( awayTeamData ) {
+                        res.homeTeamID = matchData.home_team_id;
+                        res.awayTeamID = matchData.away_team_id;
+                        res.homeTeamName = homeTeamData.name;
+                        res.homeTeamLogo = homeTeamData.logo;
+                        res.awayTeamName = awayTeamData.name;
+                        res.awayTeamLogo = awayTeamData.logo;
+                        return self.matchEvents.getEventsPerMinute( minute ).then( function ( events ) {
+                            res.events = events;
+                            return res;
+                        } );
+                    } );
+                } );
             } );
         }
     };

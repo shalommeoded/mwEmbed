@@ -1,12 +1,12 @@
 {
-  "hackathon": {
+  "livelights": {
     "scripts": [
-      "hackathon.js",
+      "livelights.js",
       "MatchEventsService.js"
     ],
     "dependencies": [
       "mw.KBasePlugin"
     ],
-    "kalturaPluginName": "hackathon"
+    "kalturaPluginName": "livelights"
   }
 }

@@ -287,7 +287,7 @@
 
 		},
 		getThumbSlicesUrl: function () {
-			// check for config override: 
+			// check for config override:
 			if (this.getConfig('thumbSlicesUrl')) {
 				return this.getConfig('thumbSlicesUrl');
 			}
@@ -461,7 +461,7 @@
 				this.$el.find('.ui-slider-handle')
 					.addClass('playHead PIE btn')
 					.wrap('<div class="handle-wrapper" />');
-				// Update attributes: 
+				// Update attributes:
 				this.updateAttr({'value': 0});
 
 				this.$el.find('.ui-slider-range-min').addClass('watched');
@@ -473,7 +473,7 @@
 					this.$el.append(
 						$('<div class="live-highlight-container"></div>').append(
 							$('<button class="live-highlight-icon">' +
-								'<img src="../../modules/hackathon/icons/Football.png" style="width: inherit; height: inherit;"/>' +
+								'<img src="../../modules/livelights/assets/img/goal.png" style="width: inherit; height: inherit;"/>' +
 								'</button>').hover(function () {
 									var video = top.document.getElementById("kaltura_player_live_highlight");
 									video.style.display = "";
