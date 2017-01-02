@@ -60,12 +60,18 @@
             this.bind( "playing", function () {
                 var self = this;
                 this.getPlayerElement().addEventListener( "timeupdate", function () {
-                    var currentTime = Math.ceil( self.getPlayerElement().currentTime / 60 );
+                    var currentTime = Math.ceil( self.getPlayerElement().currentTime / 60 - 1 );
+                    if ( currentTime > 45 ) {
+                        currentTime -= 1;
+                    }
                     return MatchManager.getMatchDetails( currentTime )
                         .then( function ( matchDetails ) {
                             var childern = _this.$el.children();
                             for ( var i = 0; i < matchDetails.events.length; i++ ) {
-                                var currentTime = Math.ceil( self.getPlayerElement().currentTime / 60 );
+                                var currentTime = Math.ceil( self.getPlayerElement().currentTime / 60 - 1 );
+                                if ( currentTime > 45 ) {
+                                    currentTime -= 1;
+                                }
                                 var event = matchDetails.events[ i ];
                                 var result = $.grep( childern, function ( e ) {
                                     var idasstring = "" + event.id;
@@ -86,6 +92,11 @@
                                             button.attr( 'id', '' + event.id );
                                             button.data( 'highlight-type', event.type );
                                             button.css( 'display', 'none' );
+
+                                            button.attr( 'title', '' + event.minute + "' " + event.player_name + " (Goal!)" );
+                                            button.data( 'toggle', 'tooltip' );
+                                            button.data( 'placement', 'bottom' );
+
                                             _this.$el.append( button );
                                             break;
                                         case "yellowcard":
@@ -102,6 +113,12 @@
                                             button.css( 'display', 'none' );
                                             button.attr( 'id', '' + event.id );
                                             button.data( 'highlight-type', event.type );
+
+                                            button.attr( 'title', '' + event.minute + "' " + event.player_name + " (Yellow Card)" );
+                                            button.data( 'toggle', 'tooltip' );
+                                            button.data( 'placement', 'bottom' );
+
+
                                             _this.$el.append( button );
                                             break;
                                         case "redcard":
@@ -118,6 +135,11 @@
                                             button.attr( 'id', '' + event.id );
                                             button.data( 'highlight-type', event.type );
                                             button.css( 'display', 'none' );
+
+                                            button.attr( 'title', '' + event.minute + "' " + event.player_name + " (Red Card)" );
+                                            button.data( 'toggle', 'tooltip' );
+                                            button.data( 'placement', 'bottom' );
+
                                             _this.$el.append( button );
                                             break;
                                         case "substitution":
@@ -133,6 +155,11 @@
                                             button.css( 'left', percent * 100 + '%' );
                                             button.attr( 'id', '' + event.id );
                                             button.data( 'highlight-type', event.type );
+
+                                            button.attr( 'title', '' + event.minute + "' " + event.player_out_name + "<--" + event.player_in_name );
+                                            button.data( 'toggle', 'tooltip' );
+                                            button.data( 'placement', 'bottom' );
+
                                             button.css( 'display', 'none' );
                                             _this.$el.append( button );
                                             break;
