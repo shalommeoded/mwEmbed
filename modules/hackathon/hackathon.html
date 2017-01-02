@@ -34,29 +34,29 @@
         }
     });
 </script>
-<div id="kaltura_player_live_highlight"
-     style=" width: 150px; height: 85px; position: absolute; left: 90px;  bottom: 522px"></div>
-<script>
-    kWidget.featureConfig({
-        'targetId': 'kaltura_player_live_highlight',
-        'wid': '_2196781',
-        'uiconf_id': '37801821',
-        'flashvars': {
-            "streamerType": "auto",
-            "largePlayBtn": {plugin: false},
-            "sideBarContainer": {plugin: false},
-            "controlBarContainer": {plugin: false},
-            "loadingSpinner": {plugin: false},
-            "autoPlay": true
-        },
-        "entry_id": "1_87jx0mw9",
-        'readyCallback': function (playerId) {
-            highlightVideo = document.getElementById(playerId);
-            highlightVideo.kBind("firstPlay", function () {
-                highlightVideo.sendNotification("doSeek", 2000);
-            });
-        }
-    });
-</script>
+<!--<div id="kaltura_player_live_highlight"-->
+     <!--style="visibility: hidden; width: 150px; height: 85px; position: absolute; left: 58px;  bottom: 513px; padding: 10px;"></div>-->
+<!--<script>-->
+    <!--kWidget.featureConfig({-->
+        <!--'targetId': 'kaltura_player_live_highlight',-->
+        <!--'wid': '_2196781',-->
+        <!--'uiconf_id': '37801821',-->
+        <!--'flashvars': {-->
+            <!--"streamerType": "auto",-->
+            <!--"largePlayBtn": {plugin: false},-->
+            <!--"sideBarContainer": {plugin: false},-->
+            <!--"controlBarContainer": {plugin: false},-->
+            <!--"loadingSpinner": {plugin: false},-->
+            <!--"autoPlay": true-->
+        <!--},-->
+        <!--"entry_id": "1_87jx0mw9",-->
+        <!--'readyCallback': function (playerId) {-->
+            <!--highlightVideo = document.getElementById(playerId);-->
+            <!--highlightVideo.kBind("firstPlay", function () {-->
+                <!--highlightVideo.sendNotification("doSeek", 2000);-->
+            <!--});-->
+        <!--}-->
+    <!--});-->
+<!--</script>-->
 </body>
 </html>

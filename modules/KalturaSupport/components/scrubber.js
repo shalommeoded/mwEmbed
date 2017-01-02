@@ -475,16 +475,44 @@
 							$('<button class="live-highlight-icon">' +
 								'<img src="../../modules/hackathon/icons/Football.png" style="width: inherit; height: inherit;"/>' +
 								'</button>').hover(function () {
-									var video = top.document.getElementById("kaltura_player_live_highlight");
-									video.style.display = "";
-									video.onmouseenter = function(){
-										debugger;
-										this.style.display = "";
-									}
-							}, function(){
-								top.document.getElementById("kaltura_player_live_highlight").style.display = "none";
+								var container = document.getElementById("live-highlight-video-container");
+								var video = document.getElementById("live-highlight-video");
+								video.currentTime = 0;
+								container.style.visibility = "visible";
+								container.onmouseover = function (e) {
+									//var video = document.getElementById("live-highlight-video");
+									this.style.visibility = "visible";
+								};
+								container.onmouseleave = function (e) {
+									//var video = document.getElementById("live-highlight-video");
+									this.style.visibility = "hidden";
+								}
+							}, function () {
+								var container = document.getElementById("live-highlight-video-container");
+								container.style.visibility = "hidden";
 							})
-						)
+						).append(
+							$('<div class="live-highlight-container"></div>').append(
+								$('<button class="live-highlight-icon">' +
+									'<img src="../../modules/hackathon/icons/Substitution.png" style="width: inherit; height: inherit;"/>' +
+									'</button>').hover(function () {
+									var container = document.getElementById("live-highlight-video-container");
+									var video = document.getElementById("live-highlight-video");
+									video.currentTime = 0;
+									container.style.visibility = "visible";
+									container.onmouseover = function (e) {
+										//var video = document.getElementById("live-highlight-video");
+										this.style.visibility = "visible";
+									};
+									container.onmouseleave = function (e) {
+										//var video = document.getElementById("live-highlight-video");
+										this.style.visibility = "hidden";
+									}
+								}, function () {
+									var container = document.getElementById("live-highlight-video-container");
+									container.style.visibility = "hidden";
+								})
+							))
 					);
 				}
 				// if parent is controlsContainer set to zero width and update at update layout time.

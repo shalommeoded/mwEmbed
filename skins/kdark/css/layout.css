@@ -2011,3 +2011,26 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 	padding: inherit;
 	bottom: 0px;
 }
+.live-highlight-video-container{
+	visibility: hidden;
+	width: 150px !important;
+	height: 85px !important;
+	position: absolute;
+	left: 38px;
+	bottom: 25px;
+	padding: 10px;
+}
+.full-size{
+	width: 585px !important;
+	height: 346px !important;
+	left: -10px;
+	bottom: -22px;
+	z-index: 200;
+}
+.live-highlight-close{
+	visibility: hidden;
+	position: absolute;
+	bottom: 327px;
+	left: 20px;
+	z-index: 100;
+}
