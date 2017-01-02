@@ -61,17 +61,11 @@
                 var self = this;
                 this.getPlayerElement().addEventListener( "timeupdate", function () {
                     var currentTime = Math.ceil( self.getPlayerElement().currentTime / 60 - 1 );
-                    if ( currentTime > 45 ) {
-                        currentTime -= 1;
-                    }
                     return MatchManager.getMatchDetails( currentTime )
                         .then( function ( matchDetails ) {
                             var childern = _this.$el.children();
                             for ( var i = 0; i < matchDetails.events.length; i++ ) {
                                 var currentTime = Math.ceil( self.getPlayerElement().currentTime / 60 - 1 );
-                                if ( currentTime > 45 ) {
-                                    currentTime -= 1;
-                                }
                                 var event = matchDetails.events[ i ];
                                 var result = $.grep( childern, function ( e ) {
                                     var idasstring = "" + event.id;
