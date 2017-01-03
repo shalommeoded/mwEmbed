@@ -2020,7 +2020,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 }
 .full-size{
 	width: 100% !important;
-	height: 800px !important;
+	height: 850px !important;
 	left: -11px !important;
 	bottom: -39px;
 	z-index: 200;
@@ -2028,7 +2028,7 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 .live-highlight-close{
 	visibility: hidden;
 	position: absolute;
-	bottom: 650px !important;
+	bottom: 690px !important;
 	left: 20px;
 	z-index: 100;
 }

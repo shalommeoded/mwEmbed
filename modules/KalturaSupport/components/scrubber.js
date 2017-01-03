@@ -130,11 +130,11 @@
 														this.style.visibility = "visible";
 													};
 													container.onmouseleave = function (e) {
-														//this.style.visibility = "hidden";
+														this.style.visibility = "hidden";
 													}
 												}, function () {
 													var container = document.getElementById("live-highlight-video-container");
-													//container.style.visibility = "hidden";
+													container.style.visibility = "hidden";
 												});
 												var percent = event.minute / currentTime;
 												if (percent * 100 === 100) {
