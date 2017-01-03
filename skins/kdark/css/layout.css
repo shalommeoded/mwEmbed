@@ -2022,13 +2022,13 @@ background-image:  linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transpa
 	width: 100% !important;
 	height: 850px !important;
 	left: -11px !important;
-	bottom: -39px;
+	bottom: -65px;
 	z-index: 200;
 }
 .live-highlight-close{
 	visibility: hidden;
 	position: absolute;
-	bottom: 690px !important;
+	bottom: 677px !important;
 	left: 20px;
 	z-index: 100;
 }
