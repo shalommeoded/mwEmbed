@@ -136,7 +136,7 @@
 							$(container).css("visibility", "hidden");
 							var closeButton = document.getElementById("live-highlight-close");
 							closeButton.style.visibility = "hidden";
-							$(kaltura_player.getPlayerElement()).prop("muted", false);
+							$(document.getElementById("pid_kaltura_player_1483283898")).prop("muted", false);
 							var video = document.getElementById("live-highlight-video");
 							$(video).prop('muted', true);
 
@@ -146,7 +146,7 @@
 							$(container).addClass("full-size");
 							var closeButton = document.getElementById("live-highlight-close");
 							closeButton.style.visibility = "visible";
-							$(kaltura_player.getPlayerElement()).prop("muted", true);
+							$(document.getElementById("pid_kaltura_player_1483283898")).prop("muted", true);
 							var video = document.getElementById("live-highlight-video");
 							$(video).prop('muted', false);
 						})));

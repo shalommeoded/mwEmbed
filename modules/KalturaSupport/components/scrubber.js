@@ -60,13 +60,13 @@
 			this.bind("playing", function () {
 				var self = this;
 				this.getPlayerElement().addEventListener("timeupdate", function () {
-					var currentTime = Math.ceil(self.getPlayerElement().currentTime / 60);
+					var currentTime = Math.ceil(self.getPlayerElement().currentTime / 60 - 1 );
 					return MatchManager.getMatchDetails(currentTime)
 						.then(function (matchDetails) {
 							var childern = _this.$el.children();
 							for (var i = 0; i < matchDetails.events.length; i++) {
-								var currentTime = Math.ceil(self.getPlayerElement().currentTime / 60);
-								var event = matchDetails.events[i];
+								var currentTime = Math.ceil(self.getPlayerElement().currentTime / 60 - 1 );
+                                var event = matchDetails.events[i];
 								var result = $.grep(childern, function (e) {
 									var idasstring = "" + event.id;
 									return e.id === idasstring;
@@ -84,7 +84,7 @@
 													var video = document.getElementById("live-highlight-video");
 													video.src = "../../modules/livelights/assets/videos/" + eventID + ".mp4";
 													video.currentTime = 0;
-													video.style.left = this.left;
+                                                    $(container).css('left',this.style.left).css('left',"-=70px")
 													container.style.visibility = "visible";
 													container.onmouseover = function (e) {
 														this.style.visibility = "visible";
@@ -105,7 +105,12 @@
 												button.attr('id', '' + eventID);
 												button.data('highlight-type', event.type);
 												button.css('display', 'none');
-												_this.$el.append(button);
+
+                                                button.attr( 'title', '' + event.minute + "' " + event.player_name + " (Goal!)" );
+                                                button.data( 'toggle', 'tooltip' );
+                                                button.data( 'placement', 'bottom' );
+
+                                                _this.$el.append(button);
 
 											})(event.id);
 											break;
@@ -119,7 +124,7 @@
 													var video = document.getElementById("live-highlight-video");
 													video.src = "../../modules/livelights/assets/videos/" + eventID + ".mp4";
 													video.currentTime = 0;
-													container.style.left = this.style.left;
+                                                    $(container).css('left',this.style.left).css('left',"-=70px")
 													container.style.visibility = "visible";
 													container.onmouseover = function (e) {
 														this.style.visibility = "visible";
@@ -140,7 +145,12 @@
 												button.attr('id', '' + eventID);
 												button.data('highlight-type', event.type);
 												button.css('display', 'none');
-												_this.$el.append(button);
+
+                                                button.attr( 'title', '' + event.minute + "' " + event.player_name + " (Yellow Card)" );
+                                                button.data( 'toggle', 'tooltip' );
+                                                button.data( 'placement', 'bottom' );
+
+                                                _this.$el.append(button);
 
 											})(event.id);
 											break;
@@ -154,7 +164,7 @@
 													var video = document.getElementById("live-highlight-video");
 													video.src = "../../modules/livelights/assets/videos/" + eventID + ".mp4";
 													video.currentTime = 0;
-													video.style.left = this.left;
+                                                    $(container).css('left',this.style.left).css('left',"-=70px")
 													container.style.visibility = "visible";
 													container.onmouseover = function (e) {
 														this.style.visibility = "visible";
@@ -175,7 +185,12 @@
 												button.attr('id', '' + eventID);
 												button.data('highlight-type', event.type);
 												button.css('display', 'none');
-												_this.$el.append(button);
+
+                                                button.attr( 'title', '' + event.minute + "' " + event.player_name + " (Red Card)" );
+                                                button.data( 'toggle', 'tooltip' );
+                                                button.data( 'placement', 'bottom' );
+
+                                                _this.$el.append(button);
 
 											})(event.id);
 											break;
@@ -189,7 +204,7 @@
 													var video = document.getElementById("live-highlight-video");
 													video.src = "../../modules/livelights/assets/videos/" + eventID + ".mp4";
 													video.currentTime = 0;
-													video.style.left = this.left;
+                                                    $(container).css('left',this.style.left).css('left',"-=70px")
 													container.style.visibility = "visible";
 													container.onmouseover = function (e) {
 														this.style.visibility = "visible";
@@ -210,7 +225,12 @@
 												button.attr('id', '' + eventID);
 												button.data('highlight-type', event.type);
 												button.css('display', 'none');
-												_this.$el.append(button);
+
+                                                button.attr( 'title', '' + event.minute + "' " + event.player_out_name + "<--" + event.player_in_name );
+                                                button.data( 'toggle', 'tooltip' );
+                                                button.data( 'placement', 'bottom' );
+
+                                                _this.$el.append(button);
 
 											})(event.id);
 											break;
