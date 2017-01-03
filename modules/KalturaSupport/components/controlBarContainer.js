@@ -137,6 +137,8 @@
 							var closeButton = document.getElementById("live-highlight-close");
 							closeButton.style.visibility = "hidden";
 							$(document.getElementById("pid_kaltura_player_1483283898")).prop("muted", false);
+							var replayLogo = top.document.getElementsByClassName("replay")[0];
+							replayLogo.style.visibility = "hidden";
 							var video = document.getElementById("live-highlight-video");
 							$(video).prop('muted', true);
 
@@ -146,6 +148,10 @@
 							$(container).addClass("full-size");
 							var closeButton = document.getElementById("live-highlight-close");
 							closeButton.style.visibility = "visible";
+							var closeButton = document.getElementById("live-highlight-close");
+							closeButton.style.visibility = "visible";
+							var replayLogo = top.document.getElementsByClassName("replay")[0];
+							replayLogo.style.visibility = "visible";
 							$(document.getElementById("pid_kaltura_player_1483283898")).prop("muted", true);
 							var video = document.getElementById("live-highlight-video");
 							$(video).prop('muted', false);
