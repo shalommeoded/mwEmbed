@@ -141,7 +141,7 @@
 							$(video).prop('muted', true);
 
 						}))
-						.append($('<video muted=true id="live-highlight-video" src="../../modules/hackathon/videos/Minute67.mp4" autoplay style="box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.59);"><video>').click(function () {
+						.append($('<video muted=true id="live-highlight-video" autoplay style="box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.59);"><video>').click(function () {
 							var container = document.getElementById("live-highlight-video-container");
 							$(container).addClass("full-size");
 							var closeButton = document.getElementById("live-highlight-close");
