@@ -151,17 +151,25 @@
     <script type="text/javascript" src="../../mwEmbedLoader.php"></script>
     <script src="MatchEventsService.js"></script>
     <script src="livelights.controller.js"></script>
+    <script>
+        $( document ).ready( function () {
+            $( '[data-toggle="tooltip"]' ).tooltip();
+        } );
+    </script>
+
 </head>
 <body ng-app="livelightsApp" ng-controller="livelightsController" ng-cloak
       style="background-image: url('assets/img/barca_studium.jpg');background-repeat: no-repeat; background-size: 100%">
-<div class="row">
-    <div class="col-md-5"></div>
-    <div class="col-md-4">
-        <h1>
-            {logo}
+<div class="row" style="background: linear-gradient(#337ab7, rgba(255, 255, 255, 0));">
+    <div class="col-md-4"></div>
+    <div class="col-md-6">
+        <h1 style="font-family: 'proxima nova';font-size: 45px;color: #fff;
+        text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.59); margin-left: 50px;">
+            <b>In <span style="color: #89efff;">Live</span></b> <span style="color:#d9534f;" class="glyphicon glyphicon-play-circle" aria-hidden="true"></span>
+            Video <span style="color: #89efff;">Highlights</span>
         </h1>
     </div>
-    <div class="col-md-4"></div>
+    <div class="col-md-2"></div>
 </div>
 <div class="row">
     <div class="col-md-1"></div>
@@ -179,10 +187,17 @@
                         kdp.kBind( "playing", function () {
                             kdp.kUnbind( "playing" );
                             var vid = $( this ).contents().contents().find( 'video' )[ 0 ];
-                            var matchCurTime = Math.ceil( vid.currentTime / 60 );
+                            var matchCurTime = Math.ceil( vid.currentTime / 60 - 1 );
+                            if ( matchCurTime > 45 ) {
+                                matchCurTime -= 1;
+                            }
                             $( window ).trigger( "onMatchMinuteRevealed", matchCurTime );
                             vid.addEventListener( "timeupdate", function () {
-                                $( window ).trigger( "onMatchTimeUpdate", Math.ceil( vid.currentTime / 60 - 1 ) );
+                                var vidTime = Math.ceil( vid.currentTime / 60 - 1 );
+                                if ( vidTime > 45 ) {
+                                    vidTime -= 1;
+                                }
+                                $( window ).trigger( "onMatchTimeUpdate", vidTime );
                             } );
                         } );
                     },
@@ -217,7 +232,7 @@
                      style="background-image: linear-gradient(to bottom,rgba(0,62,92,0.87) 0,#00496c 60%)">
                     <h4 style="color: #89efff;">
                         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                        In-Video Highlights:</h4></div>
+                       In Video Highlights:</h4></div>
                 <div class="panel-body box" style="background-color: #016fa4;">
                     <div class="row">
                         <div class="col-md-1"></div>
