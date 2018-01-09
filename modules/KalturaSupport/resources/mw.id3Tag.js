@@ -74,8 +74,12 @@
                 // on IE the tag needs to be parsed
                 time = tag.timestamp / 1000;
                 if(!time){
-                    //Some browsers do not parse the JSON well
-	                time = JSON.parse(tag).timestamp / 1000;
+                    try {
+                        //Some browsers do not parse the JSON well
+                        time = JSON.parse(tag).timestamp / 1000;
+                    } catch(e){
+                        mw.log("id3Tag plugin :: ERROR parsing tag.");
+                    }
                 }
             } else {
                 mw.log("id3Tag plugin :: ERROR parsing tag.");

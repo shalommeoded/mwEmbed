@@ -266,13 +266,17 @@
 				//data: { samples : [ id3 pes - pts and dts timestamp are relative, values are in seconds]}
 				data.samples.forEach(function(sample){
 					//Get the data from the event + Unicode transform
-					var sampleData = String.fromCharCode.apply(null, new Uint8Array(sample.data));
-					//Get the JSON substring
-					var sampleString = sampleData.substring(sampleData.indexOf("{"), sampleData.lastIndexOf("}") + 1);
-					//Parse JSON
-					var id3Tag = JSON.parse(sampleString);
-					//store ID3 data, use rounded pts value
-					this.ptsID3Data[Math.round(sample.pts)] = id3Tag;
+                    try {
+						var sampleData = String.fromCharCode.apply(null, new Uint8Array(sample.data));
+						//Get the JSON substring
+						var sampleString = sampleData.substring(sampleData.indexOf("{"), sampleData.lastIndexOf("}") + 1);
+						//Parse JSON
+                        var id3Tag = JSON.parse(sampleString);
+                        //store ID3 data, use rounded pts value
+                        this.ptsID3Data[Math.round(sample.pts)] = id3Tag;
+                    } catch(e) {
+                        this.log("unable to parse frag metadata");
+					}
 				}.bind(this));
 			},
 			onFragParsingData: function (e, data) {
