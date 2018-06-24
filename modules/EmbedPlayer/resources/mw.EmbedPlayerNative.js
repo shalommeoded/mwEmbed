@@ -100,15 +100,17 @@
 		setup: function (readyCallback) {
 			var _this = this;
 			this._propagateEvents = true;
-			if (mw.isIpad() || mw.isEdge()) {
-				this.getPlayerElement().removeAttribute("poster");
-			}
-			$(this.getPlayerElement()).css('position', 'absolute');
-
+            if (mw.isIpad() || mw.isEdge()) {
+            	this.getPlayerElement().removeAttribute("poster");
+            }
+            $(this.getPlayerElement()).css('position', 'absolute');
+			//Inspect if the entry is playing over in Edge, if so it will remove the position
+            if (mw.isEdge()) {
+                $(this.getPlayerElement()).css('position', '');
+            }
 			if (this.inline) {
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
-
             if (this.shouldAutoPlayMuted()) {
                 this.autoplay = true;
                 if (!mw.isIphone() && this.inline) {
