@@ -71,6 +71,8 @@
 			isNeeded: function () {
 				if (this.getPlayer().mediaElement.selectedSource.mimeType === "application/dash+xml") {
 					this.LoadShaka = true;
+					this.embedPlayer.streamerType = 'mpegdash';
+					
 				} else {
 					this.LoadShaka = false;
 				}
@@ -459,6 +461,10 @@
 				}
 			},
 
+			getStartTimeOfDvrWindow: function () {
+				return 0;
+			},
+
 			updatePlayheadStatus: function () {
 				var embedPlayer = this.getPlayer();
 				if ( embedPlayer.isLive() && embedPlayer.isDVR() ) {
@@ -571,6 +577,7 @@ try {
 			this.orig_onSwitchTextTrack = this.getPlayer().onSwitchTextTrack;
 			this.orig_ondurationchange = this.getPlayer()._ondurationchange;
 			this.orig_backToLive = this.getPlayer().backToLive;
+			this.orig_getStartTimeOfDvrWindow = this.getPlayer().getStartTimeOfDvrWindow;
 			this.orig_doSeek = this.getPlayer().doSeek;
 			this.orig_updatePlayheadStatus = this.getPlayer().updatePlayheadStatus;
 			this.orig_clean = this.getPlayer().clean;
@@ -582,6 +589,7 @@ try {
 			this.getPlayer().onSwitchTextTrack = this.onSwitchTextTrack.bind(this);
 			this.getPlayer()._ondurationchange = this._ondurationchange.bind(this);
 			this.getPlayer().backToLive = this.backToLive.bind(this);
+			this.getPlayer().getStartTimeOfDvrWindow = this.getStartTimeOfDvrWindow.bind(this);
 			this.getPlayer().doSeek = this.doSeek.bind(this);
 			this.getPlayer().updatePlayheadStatus = this.updatePlayheadStatus.bind(this);
 			this.getPlayer().clean = this.clean.bind(this);
@@ -598,6 +606,7 @@ try {
 			this.getPlayer().switchAudioTrack = this.orig_switchAudioTrack;
 			this.getPlayer()._ondurationchange = this.orig_ondurationchange;
 			this.getPlayer().backToLive = this.orig_backToLive;
+			this.getPlayer().getStartTimeOfDvrWindow = this.orig_getStartTimeOfDvrWindow;
 			this.getPlayer().doSeek = this.orig_doSeek;
 			this.getPlayer().updatePlayheadStatus = this.orig_updatePlayheadStatus;
 			this.getPlayer().clean = this.orig_clean;

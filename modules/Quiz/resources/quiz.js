@@ -29,6 +29,7 @@
         multiStreamWelcomeSkip:false,
         relatedStreamChanging:false,
         IVQVer:'IVQ-2.41.rc2',
+        ivqShowScreenMode: false,
 
         setup: function () {
             var _this = this;
@@ -129,7 +130,7 @@
                 this.bind('prePlayAction'+_this.KIVQModule.bindPostfix, function (e, data) {
                     mw.log("Quiz: Bind PrePlay");
                     if(!_this.KIVQModule.isKPlaylist){
-                        if(_this.getPlayer().firstPlay) {
+                        if(_this.getPlayer().firstPlay && _this.KIVQModule.showWelcomePage) {
                             mw.log("Quiz: Welcome");
                             data.allowPlayback = false;
                             _this.enablePlayDuringScreen = false;
@@ -218,6 +219,16 @@
                     };
                 }
             });
+            if (_this.getPlayer().getInterface().hasClass("mobile")){
+                $( window ).on( "orientationchange resize", function() {
+                    if(_this.ivqShowScreenMode && _this.isPortrait() ) {
+                        _this.showPortraitWarning();
+                    }else {
+                        _this.hidePortraitWarning();
+                    }
+                });
+            }
+            
           },
         getKClient: function () {
             if (!this.kClient) {
@@ -296,7 +307,7 @@
 
             $(".title-text").html(gM('mwe-quiz-almostDone'));
             $(".sub-text").html(gM('mwe-quiz-remainUnAnswered') + '</br>' + gM('mwe-quiz-pressRelevatToAnswer'))
-            $(".confirm-box").html(gM('mwe-quiz-okGotIt'));
+            $(".confirm-box").html(gM('mwe-quiz-okGotIt')).attr("tabindex", 5).attr("title", gM('mwe-quiz-okGotIt')).on('keydown', _this.keyDownHandler);
 
             $(document).off('click','.confirm-box')
                 .on('click', '.confirm-box', function () {
@@ -320,11 +331,18 @@
                     $(".header-container").addClass('close-button')
                         .on('click', function () {
                             _this.ssSetCurrentQuestion(questionNr,true);
-                        }).on('keydown', _this.keyDownHandler).attr('role', 'button').attr('tabindex', 5)
-                          .attr('title', 'Hint - '+$.cpObject.cpArray[questionNr].hintText+'. Click to close hint').focus().attr('id', 'hint-close-button').css('outline', 'none');
-                    // verify focus in IE
-                    document.getElementById('hint-close-button').focus();
-                    $(".hint-container").append($.cpObject.cpArray[questionNr].hintText);
+                        })
+                        .on('keydown', _this.keyDownHandler)
+                        .attr({'role': 'button','tabindex': 5,'title':'Close hint','id': 'hint-close-button'})
+                        .focus()
+                    $(".hint-container").append($.cpObject.cpArray[questionNr].hintText)
+                        .attr({'tabindex': 5})
+                        .on('keydown',function(e){
+                            e.preventDefault();
+                            if(e.keyCode === 9 ){
+                                $('#hint-close-button')[0].focus();
+                            }
+                            });
                 }).on('keydown', _this.keyDownHandler).attr('role', 'button').attr('tabindex', 5);
         },
         
@@ -353,11 +371,16 @@
             if ($.cpObject.cpArray[questionNr].hintText){
                 _this.ssDisplayHint(questionNr)
             }
-
+            var className = this.getClassByCPType(cPo.questionType);
+            $(".ivqContainer").addClass(className);
             if (cPo.question.length < 68){
                 $(".display-question").addClass("padding7");
             }
-            $(".display-question").text(cPo.question).attr({'tabindex': 5,"aria-lable":cPo.question}).focus();
+            var displayQuestion = $(".display-question");
+            //Search for links and links patterns ( [text|http://exampl.com] ) and add a real link to a new tab
+            displayQuestion.text(cPo.question).attr({'tabindex': 5,"aria-lable":cPo.question}).focus();
+            var questionText = this.wrapLinksWithTags(displayQuestion.html());
+            displayQuestion.html(questionText);
             //$(".display-question").attr('title', "Question number "+questionNr);
             $.each(cPo.answeres, function (key, value) {
                 var div= $("<div class ='single-answer-box-bk'>"
@@ -379,9 +402,32 @@
                 _this.showAnswered(cPo, questionNr);
             }
             else {
+                if (_this.isReflectionPoint(cPo)) {
+                    _this.KIVQModule.submitAnswer(questionNr,0);
+                }
                 _this._selectAnswerConroller(cPo, questionNr);
             }
             this.addFooter(questionNr);
+        },
+
+        getClassByCPType: function(cpTypeId){
+            switch (cpTypeId) {
+                case this.KIVQModule.QUESTIONS_TYPE.TRUE_FALSE:
+                    return 'true-false-question';
+                case this.KIVQModule.QUESTIONS_TYPE.REFLECTION_POINT:
+                    return 'reflection-point-question';
+                case this.KIVQModule.QUESTIONS_TYPE.MULTIPLE_ANSWER_QUESTION:
+                    return 'multiple-answer-question';
+                case this.KIVQModule.QUESTIONS_TYPE.FILL_IN_BLANK:
+                    return 'fill-in-blank-question';
+                case this.KIVQModule.QUESTIONS_TYPE.HOT_SPOT:
+                    return 'hot-spot-question';
+                case this.KIVQModule.QUESTIONS_TYPE.GO_TO:
+                    return 'go-to-question';
+                case this.KIVQModule.QUESTIONS_TYPE.MULTIPLE_CHOICE_ANSWER:
+                default:
+                    return 'multiple-choice-answer-question';
+            }
         },
         ssAllCompleted: function () {
             var _this = this;
@@ -392,14 +438,22 @@
             $(".title-text").html(gM('mwe-quiz-completed'));
             $(".sub-text").html(gM('mwe-quiz-sub-text'));
 
-            $(".review-button").html(gM('mwe-quiz-review'))
-                .on('click', function () {
+            $(".review-button").append(
+                $('<div/>').addClass('button-block').append(
+                    $('<span/>').addClass('button-icon review-icon'),
+                    $('<span/>').addClass('button-text').text(gM('mwe-quiz-review'))
+                )
+            ).on('click', function () {
                     _this.embedPlayer.seek(0,true);
                     _this.KIVQModule.continuePlay();
                 }).on('keydown', _this.keyDownHandler);
 
-            $(".submit-button").html(gM('mwe-quiz-submit'))
-                .on('click', function () {
+            $(".submit-button").append(
+                $('<div/>').addClass('button-block').append(
+                    $('<span/>').addClass('button-icon submit-icon'),
+                    $('<span/>').addClass('button-text').text( gM('mwe-quiz-submit') )
+                )
+            ).on('click', function () {
                     $(this).off('click');
                     $(this).html(gM('mwe-quiz-plsWait'));
                     _this.KIVQModule.setSubmitQuiz();
@@ -431,19 +485,19 @@
 
                     _this.KIVQModule.displayHex(_this.KIVQModule.setHexContainerPos("current"),cpArray);
 
-                    $(document).off('click','.q-box')
-                        .on('click', '.q-box', function () {
+                    $(document).off('click','.q-box:not(.reflection-point-question)')
+                        .on('click', '.q-box:not(.reflection-point-question)', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
                         }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
-                    $(document).off('click','.q-box-false')
-                        .on('click', '.q-box-false', function () {
+                    $(document).off('click','.q-box-false:not(.reflection-point-question)')
+                        .on('click', '.q-box-false:not(.reflection-point-question)', function () {
                             _this.KIVQScreenTemplate.tmplReviewAnswer();
                             _this.ssReviewAnswer(parseInt($(this).attr('id')));
                         }).attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer');
                 }
-                $('.q-box').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
-                $('.q-box-false').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
+                $('.q-box:not(.reflection-point-question)').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
+                $('.q-box-false:not(.reflection-point-question)').attr('tabindex', '5').attr('role', 'button').attr('title', 'click to view the question and your answer').on('keydown', _this.keyDownHandler);
             }else{
                 $(".title-text").addClass("padding23");
                 $(".sub-text").html(gM('mwe-quiz-completedQuiz'));
@@ -483,7 +537,7 @@
             }
             $(".reviewAnswerNr").append(_this.KIVQModule.i2q(selectedQuestion));
             //$(".theQuestion").html(gM('mwe-quiz-q') + "  " + $.cpObject.cpArray[selectedQuestion].question);
-            $(".theQuestion").html($.cpObject.cpArray[selectedQuestion].question);
+            $(".theQuestion").html(this.wrapLinksWithTags($.cpObject.cpArray[selectedQuestion].question));
             $(".yourAnswerText").html(gM('mwe-quiz-yourAnswer'));
             $(".yourAnswer").html($.cpObject.cpArray[selectedQuestion].answeres[$.cpObject.cpArray[selectedQuestion].selectedAnswer]);
             if (!$.cpObject.cpArray[selectedQuestion].isCorrect) {
@@ -613,17 +667,44 @@
             _this.selectedAnswer = null;
             setTimeout(function(){_this.KIVQModule.checkIfDone(questionNr)},1800);
         },
+
+        showPortraitWarning:function(){
+            this.embedPlayer.getInterface().append(
+                $('<div/>').addClass('ivq-orientation-message').append(
+                    $('<div/>').addClass('ivq-orientation-message__text')
+                        .html('This video contains features that works best on landscape mode.<br/>Please flip your screen to continue')
+                )
+            );
+        },
+        hidePortraitWarning:function () {
+            this.embedPlayer.getInterface().find(".ivq-orientation-message").remove();
+        },
+
         ivqShowScreen:function(){
-            var _this = this,embedPlayer = this.getPlayer();
+            var _this = this;
+            _this.ivqShowScreenMode = true;
+            // add warning message when in portrait + mobile
+            if ( _this.isPortrait() ) {
+                _this.showPortraitWarning();
+            }
             _this.showScreen();
             mw.log("hiding flash player");
             $('#kplayer_pid_kplayer').css('visibility', 'hidden');
             $('#kplayer_pid_kplayer').css('display', 'none');
             $('#kplayer_pid_kplayer').attr('aria-hidden', 'true');
         },
+        isPortrait: function () {
+            if ( this.getPlayer().getInterface().hasClass("mobile") && mw.getConfig('EmbedPlayer.IsFriendlyIframe') ) {
+                if (parent.document.body.parentNode.clientWidth < parent.document.body.parentNode.clientHeight) {
+                    return true;
+                }
+            }
+            return false;
+        },
         ivqHideScreen:function(){
             var _this = this,embedPlayer = this.getPlayer();
             embedPlayer.getInterface().find('.ivqContainer').empty().remove();
+            _this.ivqShowScreenMode = false;
             _this.hideScreen();
             _this.embedPlayer.enablePlayControls();
             _this.embedPlayer.triggerHelper( 'onEnableKeyboardBinding' );
@@ -634,8 +715,57 @@
             $('#kplayer_pid_kplayer').css('display', 'block');
             $('#kplayer_pid_kplayer').attr('aria-hidden', 'false');
         },
+
+        addQuePointsNavigationButtons:function (questionNr) {
+            var _this = this;
+            var allPoints = $.cpObject.cpArray;
+            var currentPoint = allPoints[questionNr];
+            if(currentPoint){
+                var nextBtn = $('<a/>').addClass('cp-navigation-btn next-cp disabled').attr({'href':'#','tabindex': -1,'aria-label':gM('mwe-quiz-next-question-disabled' )});
+                var prevBtn = $('<a/>').addClass('cp-navigation-btn prev-cp disabled').attr({'href':'#','tabindex': -1,'aria-label':gM('mwe-quiz-previous-question-disabled')});
+                var separator = $("<div/>").addClass('separator-block').append($('<span/>').addClass('separator'));
+                
+                var prevQuePoint = allPoints[currentPoint.key-1];
+                if(currentPoint.key > allPoints[0].key && prevQuePoint){
+                    //allow go to prev CP: 1 - if canSkip is true; 2 - if canSkip is false but current CP and prev CP is already answered
+                    if( (_this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && currentPoint.isAnswerd && prevQuePoint.isAnswerd) ){
+                        prevBtn.attr({'aria-label':gM('mwe-quiz-previous-question'),'tabindex': 5})
+                            .removeClass('disabled')
+                            .on('keydown', _this.keyDownHandler)
+                            .on('click',function (e) {
+                                e.preventDefault();
+                                _this.KIVQModule.continuePlay();
+                                _this.seekToQuestionTime = prevQuePoint.startTime;
+                                _this.KIVQModule.gotoScrubberPos(prevQuePoint.key);
+                                _this.isSeekingIVQ = true;
+                                mw.log("Quiz: gotoScrubberPos : " + prevQuePoint.key);
+                            });
+                    }
+                }
+                var nextQuePoint = allPoints[currentPoint.key+1];
+                if(currentPoint.key < allPoints[allPoints.length-1].key && nextQuePoint){
+                    //allow go to next CP: 1 - if canSkip is true; 2 - if canSkip is false but current CP and next CP is already answered
+                    if( (_this.KIVQModule.canSkip) || (!_this.KIVQModule.canSkip && nextQuePoint.isAnswerd)){
+                        nextBtn.attr({'aria-label':gM('mwe-quiz-next-question') ,'tabindex': 5 })
+                            .removeClass('disabled')
+                            .on('keydown', _this.keyDownHandler)
+                            .on('click',function (e) {
+                                e.preventDefault();
+                                _this.KIVQModule.continuePlay();
+                                _this.seekToQuestionTime = nextQuePoint.startTime;
+                                _this.KIVQModule.gotoScrubberPos(nextQuePoint.key);
+                                _this.isSeekingIVQ = true;
+                                mw.log("Quiz: gotoScrubberPos : " + nextQuePoint.key);
+                            });
+                    }
+                }
+                var navigation  = $("<div/>").addClass('cp-navigation').append(prevBtn, separator, nextBtn );
+                $('.ftr-container').prepend( navigation);
+            }
+        },
         addFooter: function (questionNr) {
             var _this = this;
+            _this.addQuePointsNavigationButtons(questionNr);
 
             if (_this.KIVQModule.quizSubmitted) {
                 $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
@@ -664,28 +794,50 @@
                         .css("float", "right")
                         .css("cursor","default"));
                 if (_this.KIVQModule.canSkip) {
-                    var skipTxt;
-                    if ($.cpObject.cpArray[questionNr].isAnswerd){
+                    var skipTxt = gM('mwe-quiz-skipForNow');
+                    if ($.cpObject.cpArray[questionNr].isAnswerd || _this.isReflectionPoint($.cpObject.cpArray[questionNr]) ){
                         skipTxt = gM('mwe-quiz-next');
-                    }else{
-                        skipTxt = gM('mwe-quiz-skipForNow');
                     }
+
                     $(".ftr-right").html(skipTxt).on('click', function () {
                         _this.KIVQModule.checkIfDone(questionNr)
                     }).on('keydown', _this.keyDownHandler).attr('tabindex', 5).attr('role', 'button');
-                }else if(!_this.KIVQModule.canSkip && $.cpObject.cpArray[questionNr].isAnswerd ){
+                }else if(!_this.KIVQModule.canSkip &&  ( $.cpObject.cpArray[questionNr].isAnswerd || _this.isReflectionPoint($.cpObject.cpArray[questionNr])) ){
                     $(".ftr-right").html(gM('mwe-quiz-next')).on('click', function () {
                         _this.KIVQModule.checkIfDone(questionNr)
                     });
                 }
-                $(".ftr-right").attr('tabindex', 5).attr('role', 'button').attr('title', 'move to next question').on('keydown', _this.keyDownHandler);
+                $(".ftr-right").attr('tabindex', 5).attr('role', 'button').attr('title', gM('mwe-quiz-skipForNow')).on('keydown', _this.keyDownHandler);
             }
         },
         keyDownHandler: function(ev){
             if(ev.which === 13 || ev.which === 32)
             {
                 $(ev.target).click();
+            }else if(ev.which === 9){
+                var _this = this;
+                setTimeout(function () {
+                    var currentFocusedElement = $(':focus');//when timeout will done - new element will be in focus
+                    if(!currentFocusedElement.parents('.quiz').length){
+                        if($(_this).parents(".quiz").find(".pdf-download-img").length){
+                            $(_this).parents(".quiz").find(".pdf-download-img").focus();
+                        }
+                        else if($(_this).parents(".quiz").find(".confirm-box").length){
+                            $(_this).parents(".quiz").find(".confirm-box").focus();
+                        }
+                        else if($(_this).parents(".quiz").find(".hint-why-box").length){
+                            //find hint
+                            $(_this).parents(".quiz").find(".hint-why-box").focus();
+                        }else{
+                            $(_this).parents(".quiz").find(".display-question").focus();
+                            // if hint isnt there - focus on the name
+                        }
+                        return;
+                    }
+                }, 0);
             }
+
+
         },
         displayBubbles:function(){
             var  _this = this,displayClass,embedPlayer = this.getPlayer(),handleBubbleclick;
@@ -705,7 +857,7 @@
                 var pos = (Math.round(((val.startTime/embedPlayer.kalturaPlayerMetaData.msDuration)*100) * 10)/10)-1;
                 $('.bubble-cont').append($('<div id ="' + key + '" style="margin-left:' + pos + '%">' +
                     _this.KIVQModule.i2q(key) + ' </div>')
-                        .addClass(displayClass).attr('role', 'button').attr('tabindex', 5).on('keydown', _this.keyDownHandler)
+                        .addClass(displayClass).attr('role', 'button').attr({'tabindex': 20 , "aria-label" : "Jump to Question "+ (key+1) }).on('keydown', _this.keyDownHandler)
                 );
             });
 
@@ -726,21 +878,40 @@
         },
         displayQuizEndMarker:function(){
             var  _this = this;
-            var scrubber = this.embedPlayer.getInterface().find(".scrubber");
-
-            scrubber.parent().prepend('<div class="quizDone-cont"></div>');
+            var controlBar = this.embedPlayer.getControlBarContainer();
+            controlBar.find('.bubble-cont').append('<div class="quizDone-cont"></div>');
 
             $(document).off( 'click', '.quizDone-cont' )
                 .on('click', '.quizDone-cont', function () {
                     _this.KIVQModule.quizEndScenario();
                 });
-            $('.quizDone-cont').attr('tabindex', 5).attr('role', 'button')
-                    .attr('title', 'click to end quiz now').on('keydown', _this.keyDownHandler).attr('id', 'quiz-done-continue-button').focus();
+            $('.quizDone-cont').attr({
+                'tabindex': 20,
+                'role':'button',
+                'title':'click to end quiz now',
+                'aria-label':gM('mwe-quiz-submit-button'),
+                'id':'quiz-done-continue-button'
+            }).on('keydown', _this.keyDownHandler).focus();
             // verify focus in IE
             document.getElementById('quiz-done-continue-button').focus();
             setTimeout(function () {
                 $(_this.embedPlayer.getInterface()).find('.quizDone-cont').first().addClass('small');
             },3000);
+        },
+        // Wrap links with <a href... tag so they will be clickable.
+        wrapLinksWithTags: function(text) {
+            var wrapLinksWithTitle = text.replace(/\[(\s+)?([^\|\]]*)(\|)(\s+)?((https?|ftps?):\/\/[^\s\]]+)(\s+)?(\])/gi, function(url) {
+                var updatedUrl = url.slice(1,-1).split('|');
+                var title = updatedUrl[0].trim();
+                var href = updatedUrl[1].trim();
+                return '<a target="_blank" href="' + href + '">' + title + '</a>';
+            });
+            return wrapLinksWithTitle.replace(/((https?|ftps?):\/\/[^"<\s]+)(?![^<>]*>|[^"]*?<\/a)/gi, function(url) {
+                return '<a target="_blank" href="' + url + '">' + url + '</a>';
+            });
+        },
+        isReflectionPoint: function(cPo){
+            return cPo.questionType && cPo.questionType === this.KIVQModule.QUESTIONS_TYPE.REFLECTION_POINT;
         }
     }));
 })(window.mw, window.jQuery);

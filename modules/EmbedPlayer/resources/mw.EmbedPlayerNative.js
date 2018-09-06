@@ -105,7 +105,13 @@
 			}
 			$(this.getPlayerElement()).css('position', 'absolute');
 
-			if (this.inline) {
+            /* Change the position to 'Static' only if the in-use Browser is Edge
+            and the the embedding method is ThumbnailEmbed. */
+            if (mw.isEdge() && mw.getConfig('thumbEmbedOrigin')) {
+            	$(this.getPlayerElement()).css('position', 'static');
+            }
+
+            if (this.inline) {
 				$(this.getPlayerElement()).attr('playsinline', '');
 			}
 
@@ -158,8 +164,8 @@
                 unMuteEventTriggers.forEach(function (eventName) {
                     _this.bindHelper(eventName + _this.bindPostfix, function () {
                         if (_this.mobileAutoPlay) {
-                            _this.mobileAutoPlay = false;
                             _this.setVolume(1, null, mw.isIOS());
+                            _this.mobileAutoPlay = false;
                         }
                         unMuteEventTriggers.forEach(function (eventName) {
                             _this.unbindHelper(eventName + _this.bindPostfix);
@@ -556,7 +562,7 @@
 				this.log("setCurrentTime seekTime:" + time);
 				// Try to update the playerElement time:
 				try {
-					var vid = this.getPlayerElement();
+                    var vid = this.getPlayerElement();
 					vid.currentTime = this.currentSeekTargetTime;
 				} catch (e) {
 					this.log("Error: Could not set video tag seekTime");
@@ -650,7 +656,7 @@
 		 */
 		isTextTrackSelected: function (textTracks, defaultLangKey) {
 			for (var i=0; textTracks.length > i; i++) {
-				if (textTracks[i].mode === "showing" && textTracks[i].language === defaultLangKey) {
+				if (textTracks[i].mode === "showing" && (textTracks[i].language === defaultLangKey || textTracks[i].label === defaultLangKey)) {
 					return true;
 				}
 			}
@@ -666,7 +672,7 @@
 		 */
 		showDefaultTextTrack: function (textTracks, defaultLangKey) {
 			$.each( textTracks, function( inx, caption) {
-				caption.mode = "hidden";
+				caption.mode = "disabled";
 			});
 
 			for (var i = 0; i < textTracks.length; i++) {
@@ -1104,6 +1110,9 @@
 			} else {
 				// Should not happen offten
 				this.playerElement.load();
+                if (this.currentTime > 0) {
+                    this.seek(this.currentTime);
+                }
 				if (callback) {
 					callback();
 				}
@@ -1556,19 +1565,23 @@
                             _this.id3TrackAdded = true;
 							//add id3 tags support
 							_this.id3Tag(textTrack);
+							//keep metadata tracks in hidden mode so their cues will still get updated
+							textTrack.mode = 'hidden';
 						} else if (textTrack.kind === 'subtitles' || textTrack.kind === 'captions') {
 							textTracksData.languages.push({
 								'kind': 'subtitle',
-								'language': textTrack.label,
-								'srclang': textTrack.label,
+								'language': textTrack.language,
+								'srclang': textTrack.language,
 								'label': textTrack.label,
 								'title': textTrack.label,
 								'id': textTrack.id,
 								'default': textTrack.mode === 'showing',
 								'index': i
 							});
+							if (!_this.isNativeIOSPlayback()) {
+								textTrack.mode = 'disabled';
+							}
 						}
-						textTrack.mode = 'hidden';
 					}
 					if (textTracksData.languages.length) {
 						mw.log('EmbedPlayerNative:: ' + textTracksData.languages.length + ' subtitles were found: ', textTracksData.languages);
@@ -1588,6 +1601,11 @@
 				}
 			}, 1000);
 		},
+
+		isNativeIOSPlayback: function() {
+			return mw.isIOS() && !mw.isIpad() && !mw.getConfig('EmbedPlayer.WebKitPlaysInline');
+		},
+
 		id3Tag: function(metadataTrack){
 			var _this = this;
 			metadataTrack.addEventListener("cuechange", function (evt) {
@@ -1672,7 +1690,7 @@
 		hideTextTrack: function(){
             var activeSubtitle = this.getActiveSubtitle();
             if (activeSubtitle && activeSubtitle.mode) {
-                activeSubtitle.mode = 'hidden';
+                activeSubtitle.mode = 'disabled';
                 this.log('onSwitchTextTrack disable subtitles');
             }
 		},
@@ -1713,6 +1731,14 @@
 			this.removeBindings();
 			clearTimeout(this.parseAudioTracksTimeout);
 			clearTimeout(this.parseTextTracksTimeout);
+		},
+
+		getStartTimeOfDvrWindow: function(){
+            if( this.isLive() && this.isDVR() && this.getPlayerElement().seekable.length > 0 ) {
+				return this.getPlayerElement().seekable.start(0);
+			} else {
+				return 0;
+			}
 		}
 	};
 })(mediaWiki, jQuery);

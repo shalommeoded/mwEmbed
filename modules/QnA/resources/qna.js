@@ -12,7 +12,8 @@
 			qnaFontsCssFileName: 'modules/QnA/resources/css/qna-fonts.css',
 			qnaNanoCssFileName: 'modules/QnA/resources/css/qna-nano.css',
 			qnaThreadsListCssFileName: 'modules/QnA/resources/css/qna-threads-list.css',
-			onPage: true
+			onPage: true,
+			overrideModeratorName: false
 		},
 
 		moduleStatus: ko.observable(undefined),
@@ -140,6 +141,8 @@
 				qnaObject = _this.getQnaContainer().find(".qnaModuleBackground");
 				onVideoTogglePluginButton = $('.qna-on-video-btn');
 
+                if ( _this.getConfig( 'onPage' ) ) {
+
 				// register to on click to change the icon of the toggle button
                 onVideoTogglePluginButton.on("click", function(){
 
@@ -160,6 +163,11 @@
 				});
 
 				_this.updateUnreadBadge();
+
+                }
+                else {
+                    $('.qna-on-video-btn').remove()
+				}
 			});
 
 			this.bind('onOpenFullScreen', function() {
@@ -172,6 +180,7 @@
 				_this.changeVideoToggleIcon();
 				if (!_this.getConfig( 'onPage' )){
 					$(".videoHolder, .mwPlayerContainer").css("width", _this.originalPlayerWidth + "px");
+                    $(".qnaModuleBackground").css("display", "block");
 				}
 			});
 		},
@@ -229,7 +238,7 @@
 		getQnaContainer: function(){
 			var _this = this;
             var embedPlayer = this.getPlayer();
-			if (!this.$qnaListContainer) {
+			if (!this.$qnaListContainer && this.getPlayer().isLive()) {
 
 				// for unfriendly iFrames, where we can't access window['parent'] we set on page to false
 				if ( this.getConfig( 'onPage' ) ) {
@@ -256,8 +265,7 @@
 					}catch(e){
 						mw.log("failed to access window['parent'] for creating $qnaListContainer");
 					}
-				}
-				else{
+				} else {
 					// wrap the .mwPlayerContainer element with our qnaInterface div
 					var floatDirection = this.getConfig( 'containerPosition' ) ? this.getConfig( 'containerPosition' ) : "right";
 					var qnaInterfaceElementText = "<div class='qnaInterface' style='position: relative; width: " + this.getConfig( 'moduleWidth' ) + "px; height: 100%; float:" + floatDirection + "'>";
@@ -295,14 +303,17 @@
 						_this.KQnaModule.applyLayout();
 					});
 				}else{ // for in player plugin don't wait for css to load
-					_this.KQnaService = new mw.KQnaService(embedPlayer, _this);
-					_this.KQnaModule = new mw.KQnaModule(embedPlayer, _this, _this.KQnaService);
-					ko.applyBindings(_this.KQnaModule, _this.$qnaListContainer[0]);
-					_this.KQnaModule.applyLayout();
-				}
-
+                    _this.KQnaService = new mw.KQnaService(embedPlayer, _this);
+                    _this.KQnaModule = new mw.KQnaModule(embedPlayer, _this, _this.KQnaService);
+                    ko.applyBindings(_this.KQnaModule, _this.$qnaListContainer[0]);
+                    _this.KQnaModule.applyLayout();
+                }
 			}
-			return this.$qnaListContainer;
+            else if ( !this.getPlayer().isLive() ) {
+                this.$qnaListContainer = $( ".qnaInterface");
+            }
+
+            return this.$qnaListContainer;
 		},
 
 		positionQAButtonOnVideoContainer : function(){
