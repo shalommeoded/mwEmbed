@@ -128,7 +128,8 @@
 					$(this.getPlayer().getPlayerElement()).one("canplay", function(){
 						// The initial seeking to the live edge has finished.
 						this.afterInitialSeeking = true;
-						if (this.embedPlayer.isLive() && mw.isIE11()) {
+						if (this.embedPlayer.isLive() && (mw.isIE11() || mw.isEdge())) {
+							console.error("AS we enter");
 							var player = this.embedPlayer.getPlayerElement();
 							//nudge time on IE11 live streams due to audio bug https://github.com/video-dev/hls.js/issues/2323
 							player.currentTime = player.currentTime + 0.1;
